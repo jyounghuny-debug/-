@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { ChurchTheme } from '../types';
-import { Menu, X, Sliders, Share2, PenLine, Sparkles, Save, Globe } from 'lucide-react';
+import { Menu, X, Sliders, Share2, PenLine, Sparkles, Save, Globe, ShieldCheck, Users, KeyRound, LogOut, Lock } from 'lucide-react';
 import { MissionUrgentBanner } from './MissionUrgentBanner';
+import { useAuth, OWNER_EMAIL } from '../context/AuthContext';
 
 interface NavbarProps {
   theme: ChurchTheme;
@@ -11,6 +12,8 @@ interface NavbarProps {
   onOpenNewFamilyModal: () => void;
   onSaveWebsite?: () => void;
   onOpenMissionModal: (fieldId?: string) => void;
+  onOpenPermissionsModal: () => void;
+  onOpenAuthModal: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -20,9 +23,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenNewPost,
   onOpenNewFamilyModal,
   onSaveWebsite,
-  onOpenMissionModal
+  onOpenMissionModal,
+  onOpenPermissionsModal,
+  onOpenAuthModal
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isEditor, isOwner, currentManager, logout } = useAuth();
 
   const navLinks = [
     { label: '교회소개', href: '#about' },
@@ -47,8 +53,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="font-mono text-slate-300">{theme.phone}</span>
           </div>
 
-          {/* 우측 상단 '선교지 긴급기도' 슬라이딩 배너 */}
-          <div className="w-full md:w-auto flex justify-end ml-auto">
+          {/* 우측 상단 '선교지 긴급기도' 슬라이딩 배너 & 관리자 로그인 상태 */}
+          <div className="w-full md:w-auto flex items-center justify-end gap-3 ml-auto">
+            {isEditor && currentManager && (
+              <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-[11px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>관리자 모드: {currentManager.name}</span>
+                {isOwner && <span className="text-amber-300 font-bold">[최고관리자]</span>}
+              </div>
+            )}
+
             <MissionUrgentBanner
               theme={theme}
               onOpenModal={onOpenMissionModal}
@@ -95,50 +109,106 @@ export const Navbar: React.FC<NavbarProps> = ({
             ))}
           </nav>
 
-          {/* Zone 3: 1 primary action + administrative / sharing tool buttons */}
+          {/* Zone 3: 1 primary action + administrative tool buttons (Only visible to Authorized Editors) */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Quick Management Buttons with clear tooltips */}
-            <div className="flex items-center gap-1 sm:gap-1.5 p-1 bg-slate-100/90 rounded-lg border border-slate-200/80">
-              <button
-                onClick={onSaveWebsite}
-                type="button"
-                className="p-1.5 sm:px-2.5 sm:py-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50 rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 shadow-xs"
-                title="이음교회 홈페이지 현재 상태 저장하기"
-              >
-                <Save className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="hidden md:inline">저장</span>
-              </button>
+            
+            {/* If Logged In as Authorized Manager */}
+            {isEditor && currentManager ? (
+              <div className="flex items-center gap-1 sm:gap-1.5 p-1 bg-sky-50/90 rounded-xl border border-sky-200/90 shadow-xs">
+                {/* Manager Name / Badge */}
+                <button
+                  onClick={onOpenAuthModal}
+                  type="button"
+                  className="p-1 sm:px-2.5 sm:py-1.5 text-xs font-bold text-sky-900 bg-white hover:bg-sky-50 rounded-lg border border-sky-200/80 transition-colors flex items-center gap-1 shadow-2xs"
+                  title="관리자 인증 정보 확인"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-sky-600" />
+                  <span className="hidden xl:inline">{currentManager.name}</span>
+                  <span className="text-[10px] text-sky-600 font-semibold hidden md:inline">
+                    {isOwner ? '최고권한' : '사역관리'}
+                  </span>
+                </button>
 
-              <button
-                onClick={onOpenCustomizer}
-                type="button"
-                className="p-1.5 sm:px-2.5 sm:py-1.5 text-xs font-medium text-slate-700 hover:text-slate-950 hover:bg-white rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 shadow-xs"
-                title="디자인, 색상, 폰트 및 문구 커스터마이징"
-              >
-                <Sliders className="w-3.5 h-3.5 text-slate-500" />
-                <span className="hidden md:inline">디자인 설정</span>
-              </button>
+                {/* Permissions Management Button (Owner & Admins Only) */}
+                {isOwner && (
+                  <button
+                    onClick={onOpenPermissionsModal}
+                    type="button"
+                    className="p-1.5 sm:px-2.5 sm:py-1.5 text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200 transition-colors flex items-center gap-1.5 shadow-2xs"
+                    title="홈페이지 수정 권한 부여 및 관리자 명단 설정"
+                  >
+                    <Users className="w-3.5 h-3.5 text-amber-600" />
+                    <span className="hidden md:inline">권한 부여</span>
+                  </button>
+                )}
 
-              <button
-                onClick={onOpenNewPost}
-                type="button"
-                className="p-1.5 sm:px-2.5 sm:py-1.5 text-xs font-medium text-slate-700 hover:text-slate-950 hover:bg-white rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 shadow-xs"
-                title="새로운 소식, 주보, 설교글 작성하기"
-              >
-                <PenLine className="w-3.5 h-3.5 text-slate-500" />
-                <span className="hidden md:inline">글쓰기</span>
-              </button>
+                {/* Save Website */}
+                <button
+                  onClick={onSaveWebsite}
+                  type="button"
+                  className="p-1.5 sm:px-2 sm:py-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-1 shadow-2xs"
+                  title="이음교회 홈페이지 현재 상태 저장하기"
+                >
+                  <Save className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="hidden lg:inline">저장</span>
+                </button>
 
+                {/* Customizer */}
+                <button
+                  onClick={onOpenCustomizer}
+                  type="button"
+                  className="p-1.5 sm:px-2 sm:py-1.5 text-xs font-medium text-slate-700 hover:text-slate-950 hover:bg-white rounded-lg transition-colors flex items-center gap-1 shadow-2xs"
+                  title="디자인, 색상, 폰트 및 문구 커스터마이징"
+                >
+                  <Sliders className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="hidden lg:inline">디자인</span>
+                </button>
+
+                {/* New Post */}
+                <button
+                  onClick={onOpenNewPost}
+                  type="button"
+                  className="p-1.5 sm:px-2 sm:py-1.5 text-xs font-medium text-slate-700 hover:text-slate-950 hover:bg-white rounded-lg transition-colors flex items-center gap-1 shadow-2xs"
+                  title="새로운 소식, 주보, 설교글 작성하기"
+                >
+                  <PenLine className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="hidden lg:inline">글쓰기</span>
+                </button>
+
+                {/* SEO */}
+                <button
+                  onClick={onOpenSEO}
+                  type="button"
+                  className="p-1.5 sm:px-2 sm:py-1.5 text-xs font-medium text-slate-700 hover:text-slate-950 hover:bg-white rounded-lg transition-colors flex items-center gap-1 shadow-2xs"
+                  title="SEO 검색 엔진 및 SNS 공유 설정"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="hidden lg:inline">SEO</span>
+                </button>
+
+                {/* Logout */}
+                <button
+                  onClick={logout}
+                  type="button"
+                  className="p-1.5 sm:px-2 sm:py-1.5 text-xs text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-1"
+                  title="관리자 로그아웃 (일반 열람 모드로 전환)"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden xl:inline">로그아웃</span>
+                </button>
+              </div>
+            ) : (
+              /* Public Visitor: Discreet Admin Sign-In Key Button */
               <button
-                onClick={onOpenSEO}
+                onClick={onOpenAuthModal}
                 type="button"
-                className="p-1.5 sm:px-2.5 sm:py-1.5 text-xs font-medium text-slate-700 hover:text-slate-950 hover:bg-white rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 shadow-xs"
-                title="SEO 검색 엔진 및 SNS 공유 카드 미리보기"
+                className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors flex items-center gap-1.5 shadow-2xs"
+                title="이음교회 홈페이지 관리자 로그인 (정영훈 담임목사 및 권한자)"
               >
-                <Share2 className="w-3.5 h-3.5 text-slate-500" />
-                <span className="hidden md:inline">SEO·공유</span>
+                <KeyRound className="w-3.5 h-3.5 text-slate-500" />
+                <span>관리자 로그인</span>
               </button>
-            </div>
+            )}
 
             {/* Quick Mission Urgent Prayer Button */}
             <button
@@ -194,6 +264,83 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
           
           <div className="flex flex-col gap-2 pt-1">
+            {/* Mobile Admin Status & Actions */}
+            {isEditor && currentManager ? (
+              <div className="p-3 bg-sky-50 rounded-xl border border-sky-200 space-y-2 mb-2">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1.5 font-bold text-sky-950">
+                    <ShieldCheck className="w-4 h-4 text-sky-600" />
+                    <span>{currentManager.name} ({isOwner ? '최고관리자' : '사역관리자'})</span>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      setMobileMenuOpen(false);
+                      await logout();
+                    }}
+                    className="text-xs text-rose-600 font-semibold hover:underline"
+                  >
+                    로그아웃
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-1.5 pt-1">
+                  {isOwner && (
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        onOpenPermissionsModal();
+                      }}
+                      className="py-2 text-xs font-bold text-amber-900 bg-amber-100/80 rounded-lg flex items-center justify-center gap-1"
+                    >
+                      <Users className="w-3.5 h-3.5 text-amber-700" />
+                      권한 부여 관리
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onOpenCustomizer();
+                    }}
+                    className="py-2 text-xs font-semibold text-slate-700 bg-white rounded-lg border border-slate-200 flex items-center justify-center gap-1"
+                  >
+                    <Sliders className="w-3.5 h-3.5" />
+                    디자인 설정
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onOpenNewPost();
+                    }}
+                    className="py-2 text-xs font-semibold text-slate-700 bg-white rounded-lg border border-slate-200 flex items-center justify-center gap-1"
+                  >
+                    <PenLine className="w-3.5 h-3.5" />
+                    새 글 작성
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onSaveWebsite?.();
+                    }}
+                    className="py-2 text-xs font-bold text-emerald-800 bg-emerald-100/70 rounded-lg flex items-center justify-center gap-1"
+                  >
+                    <Save className="w-3.5 h-3.5 text-emerald-600" />
+                    전체 저장
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenAuthModal();
+                }}
+                className="w-full py-2.5 px-3 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center gap-2 mb-2"
+              >
+                <KeyRound className="w-4 h-4 text-slate-500" />
+                <span>관리자 로그인 (담임목사 및 권한자)</span>
+              </button>
+            )}
+
             {/* Mobile Urgent Mission Notice */}
             <button
               onClick={() => {
@@ -219,49 +366,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               새가족 온라인 등록 신청
             </button>
-
-            <div className="grid grid-cols-4 gap-1.5 mt-1">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onSaveWebsite?.();
-                }}
-                className="py-2 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-md flex items-center justify-center gap-1"
-              >
-                <Save className="w-3.5 h-3.5" />
-                저장
-              </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenCustomizer();
-                }}
-                className="py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md flex items-center justify-center gap-1"
-              >
-                <Sliders className="w-3.5 h-3.5" />
-                디자인
-              </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenNewPost();
-                }}
-                className="py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md flex items-center justify-center gap-1"
-              >
-                <PenLine className="w-3.5 h-3.5" />
-                글쓰기
-              </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenSEO();
-                }}
-                className="py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md flex items-center justify-center gap-1"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                SEO·공유
-              </button>
-            </div>
           </div>
         </div>
       )}

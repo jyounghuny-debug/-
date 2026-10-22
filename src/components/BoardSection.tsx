@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PostItem, PostCategory, ChurchTheme } from '../types';
 import { Search, Plus, Pin, Calendar, Eye, Heart, MessageCircle, FileText, ChevronRight, LayoutGrid, ListFilter } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface BoardSectionProps {
   theme: ChurchTheme;
@@ -21,6 +22,7 @@ export const BoardSection: React.FC<BoardSectionProps> = ({
   onDeletePost,
   onOpenMissionModal
 }) => {
+  const { isEditor } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
@@ -82,17 +84,19 @@ export const BoardSection: React.FC<BoardSectionProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onOpenNewPost}
-              type="button"
-              className="px-5 py-3 text-sm font-semibold text-white rounded-xl shadow-xs transition-all flex items-center gap-2 hover:opacity-95 active:scale-98"
-              style={{ backgroundColor: theme.primaryColor }}
-            >
-              <Plus className="w-4 h-4" />
-              <span>새 글 작성하기</span>
-            </button>
-          </div>
+          {isEditor && (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onOpenNewPost}
+                type="button"
+                className="px-5 py-3 text-sm font-semibold text-white rounded-xl shadow-xs transition-all flex items-center gap-2 hover:opacity-95 active:scale-98"
+                style={{ backgroundColor: theme.primaryColor }}
+              >
+                <Plus className="w-4 h-4" />
+                <span>새 글 작성하기</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Filter Controls & Search Bar */}

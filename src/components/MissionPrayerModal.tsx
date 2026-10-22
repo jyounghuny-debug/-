@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MissionField, missionFields } from '../data/missionData';
 import { ChurchTheme } from '../types';
+import { useAuth } from '../context/AuthContext';
 import { X, Heart, Globe, Calendar, MapPin, Send, CheckCircle2, ChevronRight, ShieldCheck, Share2, Upload, RotateCcw } from 'lucide-react';
 
 interface MissionPrayerModalProps {
@@ -16,6 +17,7 @@ export const MissionPrayerModal: React.FC<MissionPrayerModalProps> = ({
   theme,
   initialFieldId = 'cambodia'
 }) => {
+  const { isEditor } = useAuth();
   const [selectedId, setSelectedId] = useState<string>(initialFieldId);
   const [prayerCounts, setPrayerCounts] = useState<{ [id: string]: number }>({
     cambodia: 142,
@@ -250,29 +252,33 @@ export const MissionPrayerModal: React.FC<MissionPrayerModalProps> = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-slate-700">사역지 현장 사진</span>
-              <div className="flex items-center gap-2">
-                <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-slate-100 text-sky-700 text-xs font-semibold rounded-lg border border-sky-200 shadow-xs transition-colors">
-                  <Upload className="w-3.5 h-3.5 text-sky-600" />
-                  <span>내 컴퓨터에서 사진 올리기</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleMissionImageUpload}
-                    className="hidden"
-                  />
-                </label>
-                {fieldImages[currentField.id] && (
-                  <button
-                    type="button"
-                    onClick={handleResetMissionImage}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-slate-500 hover:text-slate-800 text-xs bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
-                    title="기본 사진으로 복원"
-                  >
-                    <RotateCcw className="w-3 h-3" />
-                    <span>기본 복원</span>
-                  </button>
-                )}
-              </div>
+              {isEditor ? (
+                <div className="flex items-center gap-2">
+                  <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-slate-100 text-sky-700 text-xs font-semibold rounded-lg border border-sky-200 shadow-xs transition-colors">
+                    <Upload className="w-3.5 h-3.5 text-sky-600" />
+                    <span>내 컴퓨터에서 사진 올리기</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleMissionImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  {fieldImages[currentField.id] && (
+                    <button
+                      type="button"
+                      onClick={handleResetMissionImage}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 text-slate-500 hover:text-slate-800 text-xs bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                      title="기본 사진으로 복원"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>기본 복원</span>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <span className="text-[11px] text-slate-500">생생한 선교 현장의 은혜</span>
+              )}
             </div>
 
             {(fieldImages[currentField.id] || currentField.image) && (

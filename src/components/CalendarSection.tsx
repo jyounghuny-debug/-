@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { ChurchTheme, CalendarEvent, EventCategory } from '../types';
+import { useAuth } from '../context/AuthContext';
 import { 
   Calendar as CalendarIcon, 
   ChevronLeft, 
@@ -35,6 +36,7 @@ export const CalendarSection: React.FC<CalendarSectionProps> = ({
   onRSVP,
   onNavigateToPost
 }) => {
+  const { isEditor } = useAuth();
   // Current view year & month - default to October 2026 (or current date)
   const [currentDate, setCurrentDate] = useState(() => {
     // Current simulated year/month: 2026-10
@@ -243,17 +245,19 @@ export const CalendarSection: React.FC<CalendarSectionProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => setIsAddEventOpen(true)}
-              type="button"
-              className="px-4 py-2.5 text-xs sm:text-sm font-semibold text-white rounded-xl shadow-xs transition-all flex items-center gap-1.5 hover:opacity-95 active:scale-98"
-              style={{ backgroundColor: theme.primaryColor }}
-            >
-              <Plus className="w-4 h-4" />
-              <span>새 일정 등록</span>
-            </button>
-          </div>
+          {isEditor && (
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={() => setIsAddEventOpen(true)}
+                type="button"
+                className="px-4 py-2.5 text-xs sm:text-sm font-semibold text-white rounded-xl shadow-xs transition-all flex items-center gap-1.5 hover:opacity-95 active:scale-98"
+                style={{ backgroundColor: theme.primaryColor }}
+              >
+                <Plus className="w-4 h-4" />
+                <span>새 일정 등록</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Filter Bar & View Toggle */}

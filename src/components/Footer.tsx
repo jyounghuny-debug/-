@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChurchTheme, SEOSettings } from '../types';
+import { useAuth } from '../context/AuthContext';
 import { Youtube, Instagram, MessageCircle, Bookmark, Sliders, Share2, PenLine, Heart } from 'lucide-react';
 
 interface FooterProps {
@@ -17,6 +18,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenSEO,
   onOpenNewPost
 }) => {
+  const { isEditor } = useAuth();
   return (
     <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
@@ -99,37 +101,49 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
 
           {/* Col 3: Quick Administrative Controls (lg:col-span-3) */}
-          <div className="lg:col-span-3 space-y-3">
-            <h4 className="text-sm font-bold text-white mb-3">웹사이트 관리 도구</h4>
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={onOpenCustomizer}
-                type="button"
-                className="w-full text-left px-3.5 py-2 text-xs rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-2"
-              >
-                <Sliders className="w-3.5 h-3.5 text-sky-400" />
-                <span>디자인 & 콘텐츠 설정 스튜디오</span>
-              </button>
+          {isEditor ? (
+            <div className="lg:col-span-3 space-y-3">
+              <h4 className="text-sm font-bold text-white mb-3">웹사이트 관리 도구</h4>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={onOpenCustomizer}
+                  type="button"
+                  className="w-full text-left px-3.5 py-2 text-xs rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-2"
+                >
+                  <Sliders className="w-3.5 h-3.5 text-sky-400" />
+                  <span>디자인 & 콘텐츠 설정 스튜디오</span>
+                </button>
 
-              <button
-                onClick={onOpenNewPost}
-                type="button"
-                className="w-full text-left px-3.5 py-2 text-xs rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-2"
-              >
-                <PenLine className="w-3.5 h-3.5 text-sky-400" />
-                <span>새 소식 및 설교글 작성</span>
-              </button>
+                <button
+                  onClick={onOpenNewPost}
+                  type="button"
+                  className="w-full text-left px-3.5 py-2 text-xs rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-2"
+                >
+                  <PenLine className="w-3.5 h-3.5 text-sky-400" />
+                  <span>새 소식 및 설교글 작성</span>
+                </button>
 
-              <button
-                onClick={onOpenSEO}
-                type="button"
-                className="w-full text-left px-3.5 py-2 text-xs rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-2"
-              >
-                <Share2 className="w-3.5 h-3.5 text-sky-400" />
-                <span>SEO 검색 엔진 & SNS 도구</span>
-              </button>
+                <button
+                  onClick={onOpenSEO}
+                  type="button"
+                  className="w-full text-left px-3.5 py-2 text-xs rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-2"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-sky-400" />
+                  <span>SEO 검색 엔진 & SNS 도구</span>
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="lg:col-span-3 space-y-3">
+              <h4 className="text-sm font-bold text-white mb-3">이음 공동체 비전</h4>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                사람과 사람을 잇고, 교회와 세상을 이으며, 다음 세대와 열방을 향해 나아가는 거룩한 십자가 복음의 공동체입니다.
+              </p>
+              <div className="pt-2 text-xs text-slate-500 font-mono">
+                주일예배: 오전 09:30 / 11:00
+              </div>
+            </div>
+          )}
 
         </div>
 

@@ -30,6 +30,8 @@ import { SEOAndSocialModal } from './components/SEOAndSocialModal';
 import { PostEditorModal } from './components/PostEditorModal';
 import { PostDetailModal } from './components/PostDetailModal';
 import { MissionPrayerModal } from './components/MissionPrayerModal';
+import { ManagerAuthModal } from './components/ManagerAuthModal';
+import { PermissionsModal } from './components/PermissionsModal';
 
 export default function App() {
   // Theme state with LocalStorage persistence
@@ -147,6 +149,8 @@ export default function App() {
   const [saveToast, setSaveToast] = useState<string | null>(null);
   const [isMissionModalOpen, setIsMissionModalOpen] = useState(false);
   const [selectedMissionFieldId, setSelectedMissionFieldId] = useState<string>('cambodia');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
 
   // Sync to localStorage
   useEffect(() => {
@@ -432,6 +436,8 @@ export default function App() {
         onOpenNewFamilyModal={() => setIsNewFamilyModalOpen(true)}
         onSaveWebsite={handleSaveWebsite}
         onOpenMissionModal={handleOpenMissionModal}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenPermissionsModal={() => setIsPermissionsModalOpen(true)}
       />
 
       {/* Floating Save Toast Banner */}
@@ -610,6 +616,18 @@ export default function App() {
         onClose={() => setIsMissionModalOpen(false)}
         theme={theme}
         initialFieldId={selectedMissionFieldId}
+      />
+
+      <ManagerAuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        theme={theme}
+      />
+
+      <PermissionsModal
+        isOpen={isPermissionsModalOpen}
+        onClose={() => setIsPermissionsModalOpen(false)}
+        theme={theme}
       />
     </div>
   );

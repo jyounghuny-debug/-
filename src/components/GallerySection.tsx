@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChurchTheme, CommunityStory } from '../types';
+import { useAuth } from '../context/AuthContext';
 import { 
   X, 
   ZoomIn, 
@@ -29,6 +30,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
   stories, 
   onUpdateStories 
 }) => {
+  const { isEditor } = useAuth();
   // Modal states
   const [selectedStory, setSelectedStory] = useState<CommunityStory | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -228,17 +230,19 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={handleOpenCreate}
-              type="button"
-              className="px-4 py-2.5 text-xs sm:text-sm font-bold text-white rounded-xl shadow-xs transition-all flex items-center gap-2 hover:opacity-95 active:scale-98"
-              style={{ backgroundColor: theme.primaryColor }}
-            >
-              <Plus className="w-4 h-4" />
-              <span>새 이야기 등록</span>
-            </button>
-          </div>
+          {isEditor && (
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={handleOpenCreate}
+                type="button"
+                className="px-4 py-2.5 text-xs sm:text-sm font-bold text-white rounded-xl shadow-xs transition-all flex items-center gap-2 hover:opacity-95 active:scale-98"
+                style={{ backgroundColor: theme.primaryColor }}
+              >
+                <Plus className="w-4 h-4" />
+                <span>새 이야기 등록</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Stories Grid */}
@@ -247,13 +251,15 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
             <FileText className="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <h3 className="text-base font-bold text-slate-700">등록된 공동체 이야기가 없습니다</h3>
             <p className="text-xs text-slate-500 mt-1">이음교회의 소중한 순간들을 사진과 함께 등록해 보세요.</p>
-            <button
-              onClick={handleOpenCreate}
-              className="mt-4 px-4 py-2 text-xs font-semibold text-white rounded-xl"
-              style={{ backgroundColor: theme.primaryColor }}
-            >
-              새 이야기 등록하기
-            </button>
+            {isEditor && (
+              <button
+                onClick={handleOpenCreate}
+                className="mt-4 px-4 py-2 text-xs font-semibold text-white rounded-xl"
+                style={{ backgroundColor: theme.primaryColor }}
+              >
+                새 이야기 등록하기
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -278,24 +284,26 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
                   </div>
 
                   {/* Quick Edit & Delete Hover Actions */}
-                  <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      type="button"
-                      onClick={(e) => handleOpenEdit(item, e)}
-                      className="p-1.5 rounded-lg bg-white/95 backdrop-blur-md text-slate-700 hover:text-sky-700 hover:bg-white shadow-md transition-colors"
-                      title="이야기 수정"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => handleDeleteStory(item.id, e)}
-                      className="p-1.5 rounded-lg bg-white/95 backdrop-blur-md text-rose-600 hover:text-rose-700 hover:bg-white shadow-md transition-colors"
-                      title="이야기 삭제"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                  {isEditor && (
+                    <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        type="button"
+                        onClick={(e) => handleOpenEdit(item, e)}
+                        className="p-1.5 rounded-lg bg-white/95 backdrop-blur-md text-slate-700 hover:text-sky-700 hover:bg-white shadow-md transition-colors"
+                        title="이야기 수정"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteStory(item.id, e)}
+                        className="p-1.5 rounded-lg bg-white/95 backdrop-blur-md text-rose-600 hover:text-rose-700 hover:bg-white shadow-md transition-colors"
+                        title="이야기 삭제"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
 
                   {/* Zoom hint on hover */}
                   <div className="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white pointer-events-none">
@@ -324,14 +332,18 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
 
                   {/* Card footer: Edit button & Likes */}
                   <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <button
-                      type="button"
-                      onClick={(e) => handleOpenEdit(item, e)}
-                      className="text-[11px] font-semibold text-sky-700 hover:text-sky-800 flex items-center gap-1"
-                    >
-                      <Edit3 className="w-3 h-3" />
-                      <span>수정</span>
-                    </button>
+                    {isEditor ? (
+                      <button
+                        type="button"
+                        onClick={(e) => handleOpenEdit(item, e)}
+                        className="text-[11px] font-semibold text-sky-700 hover:text-sky-800 flex items-center gap-1"
+                      >
+                        <Edit3 className="w-3 h-3" />
+                        <span>수정</span>
+                      </button>
+                    ) : (
+                      <span className="text-[11px] text-slate-400 font-medium">이음교회 이야기</span>
+                    )}
 
                     <button
                       type="button"
@@ -407,16 +419,18 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={(e) => {
-                      setSelectedStory(null);
-                      handleOpenEdit(selectedStory, e);
-                    }}
-                    className="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-1.5"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span>이야기 수정</span>
-                  </button>
+                  {isEditor && (
+                    <button
+                      onClick={(e) => {
+                        setSelectedStory(null);
+                        handleOpenEdit(selectedStory, e);
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-1.5"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>이야기 수정</span>
+                    </button>
+                  )}
 
                   <button
                     onClick={(e) => handleLikeStory(selectedStory.id, e)}

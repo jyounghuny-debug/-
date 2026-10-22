@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PostItem, ChurchTheme } from '../types';
 import { X, Heart, Eye, Share2, Printer, MessageCircle, Send, Edit, Trash2, Pin, BookOpen, Youtube, ExternalLink } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface PostDetailModalProps {
   post: PostItem | null;
@@ -25,6 +26,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
   theme,
   onOpenMissionModal
 }) => {
+  const { isEditor } = useAuth();
   const [commentAuthor, setCommentAuthor] = useState('');
   const [commentContent, setCommentContent] = useState('');
   const [hasLiked, setHasLiked] = useState(false);
@@ -89,29 +91,33 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => onEdit(post)}
-              type="button"
-              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 rounded-lg transition-colors text-xs flex items-center gap-1"
-              title="게시글 수정"
-            >
-              <Edit className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">수정</span>
-            </button>
-            <button
-              onClick={() => {
-                if (confirm('정말 이 게시글을 삭제하시겠습니까?')) {
-                  onDelete(post.id);
-                  onClose();
-                }
-              }}
-              type="button"
-              className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors text-xs flex items-center gap-1"
-              title="게시글 삭제"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">삭제</span>
-            </button>
+            {isEditor && (
+              <>
+                <button
+                  onClick={() => onEdit(post)}
+                  type="button"
+                  className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 rounded-lg transition-colors text-xs flex items-center gap-1"
+                  title="게시글 수정"
+                >
+                  <Edit className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">수정</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (confirm('정말 이 게시글을 삭제하시겠습니까?')) {
+                      onDelete(post.id);
+                      onClose();
+                    }
+                  }}
+                  type="button"
+                  className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors text-xs flex items-center gap-1"
+                  title="게시글 삭제"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">삭제</span>
+                </button>
+              </>
+            )}
             <button
               onClick={onClose}
               type="button"
