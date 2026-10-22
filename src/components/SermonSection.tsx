@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { ChurchTheme, PostItem } from '../types';
-import { Play, Pause, BookOpen, Volume2, Share2, Download, Video, Calendar, User } from 'lucide-react';
+import { Play, Pause, BookOpen, Volume2, Share2, Download, Video, Calendar, User, Youtube, ExternalLink } from 'lucide-react';
 
 interface SermonSectionProps {
   theme: ChurchTheme;
   sermons: PostItem[];
   onOpenSermonPost: (post: PostItem) => void;
   onOpenSEO: () => void;
+  youtubeUrl?: string;
 }
 
 export const SermonSection: React.FC<SermonSectionProps> = ({
   theme,
   sermons,
   onOpenSermonPost,
-  onOpenSEO
+  onOpenSEO,
+  youtubeUrl = 'https://www.youtube.com/channel/UCQNgJ4A8zgLqHRNYLIkGRqg'
 }) => {
   const [selectedSermon, setSelectedSermon] = useState<PostItem>(sermons[0] || null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -39,14 +41,26 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            <a
+              href={youtubeUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="px-4 py-2.5 text-xs sm:text-sm font-bold text-white bg-[#FF0000] hover:bg-[#E60000] rounded-xl flex items-center gap-2 transition-all shadow-xs active:scale-95"
+              title="이음교회 공식 설교동영상 유튜브 채널 바로가기"
+            >
+              <Youtube className="w-4 h-4" />
+              <span>유튜브 설교채널</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+
             <button
               onClick={() => {
                 const boardEl = document.getElementById('board');
                 if (boardEl) boardEl.scrollIntoView({ behavior: 'smooth' });
               }}
               type="button"
-              className="px-4 py-2 text-xs sm:text-sm font-medium text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+              className="px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
             >
               설교 목록 전체보기
             </button>
@@ -120,6 +134,18 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
                       </div>
                     </div>
 
+                    <a
+                      href={youtubeUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-3 py-1.5 bg-[#FF0000] hover:bg-[#E60000] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs active:scale-95 shrink-0"
+                      title="유튜브에서 이음교회 설교 실황 보기"
+                    >
+                      <Youtube className="w-3.5 h-3.5" />
+                      <span>YouTube 시청</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+
                     <button
                       onClick={onOpenSEO}
                       type="button"
@@ -151,6 +177,19 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
                 <h4 className="text-sm font-bold text-slate-900 mb-2">설교 요약 및 묵상</h4>
                 <div className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line line-clamp-6">
                   {selectedSermon.content}
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-slate-100">
+                  <a
+                    href={youtubeUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs"
+                  >
+                    <Youtube className="w-4 h-4 text-[#FF0000]" />
+                    <span>유튜브 채널에서 주일 전체 설교영상 시청하기</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               </div>
 

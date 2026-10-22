@@ -6,12 +6,14 @@ interface WorshipScheduleSectionProps {
   theme: ChurchTheme;
   schedules: WorshipSchedule[];
   onOpenSEO: () => void;
+  youtubeUrl?: string;
 }
 
 export const WorshipScheduleSection: React.FC<WorshipScheduleSectionProps> = ({
   theme,
   schedules,
-  onOpenSEO
+  onOpenSEO,
+  youtubeUrl = 'https://www.youtube.com/channel/UCQNgJ4A8zgLqHRNYLIkGRqg'
 }) => {
   return (
     <section id="worship" className="py-20 md:py-28 bg-[#FAFBFD]">
@@ -138,13 +140,13 @@ export const WorshipScheduleSection: React.FC<WorshipScheduleSectionProps> = ({
               </div>
 
               <a
-                href="https://youtube.com"
+                href={youtubeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3 px-4 rounded-xl font-semibold text-sm text-white flex items-center justify-center gap-2 transition-transform hover:scale-[1.01] active:scale-98"
+                className="w-full py-3 px-4 rounded-xl font-semibold text-sm text-white flex items-center justify-center gap-2 transition-transform hover:scale-[1.01] active:scale-98 shadow-sm hover:shadow-md"
                 style={{ backgroundColor: theme.primaryColor }}
               >
-                <Youtube className="w-4 h-4" />
+                <Youtube className="w-4 h-4 text-red-500 bg-white rounded-full p-0.5" />
                 <span>이음교회 유튜브 채널 바로가기</span>
               </a>
             </div>

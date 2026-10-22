@@ -236,7 +236,7 @@ export const initialSEOSettings: SEOSettings = {
   ogImage: '/src/assets/images/hero_ieum_church_1792553379074.jpg',
   siteUrl: 'https://ieumchurch.kr',
   socialLinks: {
-    youtube: 'https://youtube.com/@ieumchurch',
+    youtube: 'https://www.youtube.com/channel/UCQNgJ4A8zgLqHRNYLIkGRqg',
     instagram: 'https://instagram.com/ieumchurch',
     kakaotalk: 'https://pf.kakao.com/_ieumchurch',
     band: 'https://band.us/@ieumchurch'

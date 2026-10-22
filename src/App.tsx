@@ -111,7 +111,17 @@ export default function App() {
   const [seoSettings, setSEOSettings] = useState<SEOSettings>(() => {
     try {
       const saved = localStorage.getItem('ieum_church_seo');
-      return saved ? JSON.parse(saved) : initialSEOSettings;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          ...parsed,
+          socialLinks: {
+            ...parsed.socialLinks,
+            youtube: 'https://www.youtube.com/channel/UCQNgJ4A8zgLqHRNYLIkGRqg'
+          }
+        };
+      }
+      return initialSEOSettings;
     } catch {
       return initialSEOSettings;
     }
@@ -455,6 +465,7 @@ export default function App() {
             theme={theme}
             schedules={schedules}
             onOpenSEO={() => setIsSEOOpen(true)}
+            youtubeUrl={seoSettings.socialLinks.youtube || 'https://www.youtube.com/channel/UCQNgJ4A8zgLqHRNYLIkGRqg'}
           />
         )}
 
@@ -481,6 +492,7 @@ export default function App() {
             sermons={displaySermons}
             onOpenSermonPost={(post) => setSelectedPost(post)}
             onOpenSEO={() => setIsSEOOpen(true)}
+            youtubeUrl={seoSettings.socialLinks.youtube}
           />
         )}
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PostItem, ChurchTheme } from '../types';
-import { X, Heart, Eye, Share2, Printer, MessageCircle, Send, Edit, Trash2, Pin, BookOpen } from 'lucide-react';
+import { X, Heart, Eye, Share2, Printer, MessageCircle, Send, Edit, Trash2, Pin, BookOpen, Youtube, ExternalLink } from 'lucide-react';
 
 interface PostDetailModalProps {
   post: PostItem | null;
@@ -160,6 +160,34 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
                   </p>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Sermon YouTube Video Direct Link */}
+          {post.category === 'sermon' && (
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-red-50 via-rose-50 to-orange-50 border border-red-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#FF0000] text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Youtube className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs sm:text-sm font-bold text-slate-900">
+                    이음교회 주일 설교동영상 실황 시청
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    유튜브 공식 채널에서 생생한 설교 실황 영상을 시청하실 수 있습니다.
+                  </p>
+                </div>
+              </div>
+              <a
+                href="https://www.youtube.com/channel/UCQNgJ4A8zgLqHRNYLIkGRqg"
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2 text-xs font-bold text-white bg-[#FF0000] hover:bg-[#E60000] rounded-xl transition-all shadow-xs flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
+              >
+                <span>유튜브에서 영상 보기</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
             </div>
           )}
 
