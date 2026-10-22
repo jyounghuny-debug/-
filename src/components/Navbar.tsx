@@ -202,10 +202,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onOpenAuthModal}
                 type="button"
-                className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors flex items-center gap-1.5 shadow-2xs"
-                title="이음교회 홈페이지 관리자 로그인 (정영훈 담임목사 및 권한자)"
+                className="px-3 py-1.5 text-xs font-semibold text-sky-800 hover:text-sky-950 bg-sky-50 hover:bg-sky-100/80 rounded-lg border border-sky-200 transition-colors flex items-center gap-1.5 shadow-2xs"
+                title="이음교회 홈페이지 관리자 로그인 (정영훈 담임목사 구글 계정)"
               >
-                <KeyRound className="w-3.5 h-3.5 text-slate-500" />
+                <KeyRound className="w-3.5 h-3.5 text-sky-600" />
                 <span>관리자 로그인</span>
               </button>
             )}
@@ -334,10 +334,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setMobileMenuOpen(false);
                   onOpenAuthModal();
                 }}
-                className="w-full py-2.5 px-3 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center gap-2 mb-2"
+                className="w-full py-2.5 px-3 text-xs font-semibold text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-xl flex items-center justify-center gap-2 mb-2"
               >
-                <KeyRound className="w-4 h-4 text-slate-500" />
-                <span>관리자 로그인 (담임목사 및 권한자)</span>
+                <KeyRound className="w-4 h-4 text-sky-600" />
+                <span>관리자 로그인 (정영훈 담임목사 구글 계정)</span>
               </button>
             )}
 
