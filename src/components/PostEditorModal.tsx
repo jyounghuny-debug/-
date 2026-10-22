@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PostItem, PostCategory, EventCategory, ChurchTheme } from '../types';
-import { X, Image as ImageIcon, Pin, BookOpen, Sparkles, Check, AlignLeft, Bold, List, Calendar } from 'lucide-react';
+import { X, Image as ImageIcon, Pin, BookOpen, Sparkles, Check, AlignLeft, Bold, List, Calendar, Upload } from 'lucide-react';
 
 interface PostEditorModalProps {
   isOpen: boolean;
@@ -46,12 +46,33 @@ export const PostEditorModal: React.FC<PostEditorModalProps> = ({
   const [eventCategory, setEventCategory] = useState<EventCategory>('worship');
   const [eventTarget, setEventTarget] = useState('전 교인');
 
+  // Handle local image file upload (FileReader converts to base64 DataURL)
+  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드할 수 있습니다.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        setImageUrl(dataUrl);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Preset images for church posts
   const presetImages = [
     { label: '교회 본당 전경', url: theme.heroImage },
     { label: '찬양 및 예배 실황', url: theme.worshipImage },
     { label: '성도 친교 및 다과', url: theme.fellowshipImage },
-    { label: '담임목사 서재', url: theme.pastorImage }
+    { label: '담임목사 서재', url: theme.pastorImage },
+    { label: '선교지 사역 현장', url: '/assets/aistudio/KakaoTalk_20260525_183850966_03_18abfd03.jpg' }
   ];
 
   useEffect(() => {
@@ -265,43 +286,78 @@ export const PostEditorModal: React.FC<PostEditorModalProps> = ({
             </div>
           </div>
 
-          {/* Representative Image (Preset selector or URL) */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              대표 이미지 (프리셋 선택 또는 이미지 URL)
-            </label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {presetImages.map((img) => (
-                <button
-                  key={img.label}
-                  type="button"
-                  onClick={() => setImageUrl(img.url)}
-                  className={`text-xs px-2.5 py-1.5 rounded-lg border transition-all ${
-                    imageUrl === img.url
-                      ? 'border-sky-500 bg-sky-50 text-sky-800 font-semibold'
-                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  {img.label}
-                </button>
-              ))}
+          {/* Representative Image (Local file upload, preset selector, or URL) */}
+          <div className="p-4 bg-slate-50/90 rounded-2xl border border-slate-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-bold text-slate-800">
+                게시글 대표 사진 등록 (선교지·소식·주보 공통)
+              </label>
               {imageUrl && (
                 <button
                   type="button"
                   onClick={() => setImageUrl('')}
-                  className="text-xs px-2 py-1 text-slate-400 hover:text-rose-600"
+                  className="text-xs px-2 py-0.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                 >
-                  초기화
+                  사진 초기화
                 </button>
               )}
             </div>
-            <input
-              type="text"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="직접 이미지 URL 입력 (비워둘 시 텍스트 전용 카드)"
-              className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500"
-            />
+
+            {/* Preview Thumbnail if selected */}
+            {imageUrl && (
+              <div className="relative h-36 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                <img
+                  src={imageUrl}
+                  alt="등록된 대표 사진 미리보기"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-xs text-white text-[11px] px-2.5 py-1 rounded-md">
+                  현재 등록된 대표 사진
+                </div>
+              </div>
+            )}
+
+            {/* Direct Upload Button from Computer */}
+            <label className="w-full py-2.5 px-4 bg-white hover:bg-sky-50 text-sky-700 text-xs font-semibold rounded-xl border border-sky-200 flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors">
+              <Upload className="w-4 h-4 text-sky-600" />
+              <span>내 컴퓨터에서 사진 파일 직접 올리기</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageFileUpload}
+                className="hidden"
+              />
+            </label>
+
+            {/* Presets & URL input */}
+            <div>
+              <span className="text-[11px] text-slate-500 font-medium block mb-1.5">
+                또는 추천 사진 / 주소 입력:
+              </span>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {presetImages.map((img) => (
+                  <button
+                    key={img.label}
+                    type="button"
+                    onClick={() => setImageUrl(img.url)}
+                    className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
+                      imageUrl === img.url
+                        ? 'border-sky-500 bg-sky-50 text-sky-800 font-semibold shadow-xs'
+                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >
+                    {img.label}
+                  </button>
+                ))}
+              </div>
+              <input
+                type="text"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="또는 직접 이미지 URL 주소 입력 (비워둘 시 텍스트 카드)"
+                className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 font-mono"
+              />
+            </div>
           </div>
 
           {/* Calendar Auto-Sync Integration Card */}

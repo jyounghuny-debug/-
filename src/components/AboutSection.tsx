@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { ChurchTheme } from '../types';
 import { BookOpen, Heart, Users2, Globe2, Quote, Sparkles, UserCheck } from 'lucide-react';
-import { pastorStudyImg, pastorOriginalImg } from '../data/initialData';
+import { pastorStudyImg } from '../data/initialData';
 
 interface AboutSectionProps {
   theme: ChurchTheme;
 }
 
 export const AboutSection: React.FC<AboutSectionProps> = ({ theme }) => {
-  const [activePhoto, setActivePhoto] = useState<'study' | 'original'>('study');
   const [imgError, setImgError] = useState(false);
 
   const visions = [
@@ -64,13 +63,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ theme }) => {
           <div className="lg:col-span-5 rounded-3xl overflow-hidden shadow-sm border border-slate-200/80 bg-slate-900 min-h-[420px] lg:min-h-full relative flex flex-col justify-end group">
             {/* Main Pastor Image */}
             <img
-              src={
-                imgError
-                  ? pastorStudyImg
-                  : activePhoto === 'study'
-                  ? theme.pastorImage || pastorStudyImg
-                  : pastorOriginalImg
-              }
+              src={imgError ? pastorStudyImg : (theme.pastorImage || pastorStudyImg)}
               alt={`${theme.seniorPastor} ${theme.pastorTitle}`}
               referrerPolicy="no-referrer"
               onError={() => {
@@ -78,44 +71,6 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ theme }) => {
               }}
               className="absolute inset-0 w-full h-full object-cover object-center transition-all duration-700 group-hover:scale-102"
             />
-
-            {/* Photo Style Toggle Overlay at Top */}
-            <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between">
-              <div className="flex items-center gap-1 p-1 bg-black/40 backdrop-blur-md rounded-xl border border-white/20">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setImgError(false);
-                    setActivePhoto('study');
-                  }}
-                  className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all ${
-                    activePhoto === 'study'
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-white/80 hover:text-white'
-                  }`}
-                >
-                  서재 미소 사진
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setImgError(false);
-                    setActivePhoto('original');
-                  }}
-                  className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all ${
-                    activePhoto === 'original'
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-white/80 hover:text-white'
-                  }`}
-                >
-                  원본 프로필
-                </button>
-              </div>
-
-              <span className="text-[11px] font-medium text-white/90 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 hidden sm:inline">
-                {activePhoto === 'study' ? '서재 인물 사진' : '정장 프로필'}
-              </span>
-            </div>
 
             {/* Gradient Scrim & Bottom Info */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent pointer-events-none" />

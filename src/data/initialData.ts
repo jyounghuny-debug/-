@@ -15,7 +15,7 @@ export const initialTheme: ChurchTheme = {
   churchName: '이음교회',
   churchEngName: 'IEUM CHURCH',
   slogan: '하나님 나라와 열방을 이어가는 이음교회',
-  subSlogan: '2026 교회 표어: 제자도로 세워가는 교회',
+  subSlogan: '',
   scriptureVerse: '누구든지 자기 십자가를 지고 나를 따르지 않는 자도 능히 내 제자가 되지 못하리라 (누가복음 14:27)',
   seniorPastor: '정영훈 목사',
   pastorTitle: '담임목사',
@@ -170,11 +170,65 @@ export const initialPosts: PostItem[] = [
     likes: 89,
     isPinned: true,
     scripture: '요한복음 14:27',
+    scripturePassage: '"평안을 너희에게 끼치노니 곧 나의 평안을 너희에게 주노라. 내가 너희에게 주는 것은 세상이 주는 것과 같지 아니하니라. 너희는 마음에 근심하지도 말고 두려워하지도 말라."',
     preacher: '정영훈 담임목사',
     videoDuration: '38:15',
+    videoUrl: 'https://www.youtube.com/channel/UCQNgJ4A8zgLqHRNYLIkGRqg',
     imageUrl: '/src/assets/images/hero_ieum_church_1792553379074.jpg',
     comments: [
       { id: 'c3', author: '강지혜 청년', content: '취업 준비로 마음이 많이 불안했는데 큰 위로가 되었습니다. 아멘.', date: '2026.04.19' }
+    ]
+  },
+  {
+    id: 'p2-2',
+    category: 'sermon',
+    title: '십자가를 지고 따르는 참된 제자의 길 (누가복음 14:27)',
+    content: `우리가 주님을 따른다는 것은 나의 계획과 뜻을 내려놓고 주님의 말씀 앞에 온전히 순종하는 결단입니다.
+참된 제자도는 십자가 너머에 예비된 부활의 기쁨과 생명의 풍성함을 바라보며 날마다 자기를 부인하는 거룩한 동행입니다.
+
+말씀 포인트:
+1. 십자가는 희생이 아니라 참된 자유와 생명으로 들어가는 문입니다.
+2. 매일의 삶 속에서 작은 순종으로 그리스도를 닮아가는 것이 제자의 삶입니다.
+3. 믿음의 동역자들과 함께 어깨를 맞대고 복음의 다리를 이어갑시다.`,
+    author: '정영훈 담임목사',
+    date: '2026.04.12',
+    views: 480,
+    likes: 72,
+    isPinned: false,
+    scripture: '누가복음 14:27',
+    scripturePassage: '"누구든지 자기 십자가를 지고 나를 따르지 않는 자도 능히 내 제자가 되지 못하리라"',
+    preacher: '정영훈 담임목사',
+    videoDuration: '41:20',
+    videoUrl: 'https://www.youtube.com/channel/UCQNgJ4A8zgLqHRNYLIkGRqg',
+    imageUrl: '/src/assets/images/worship_praise_service_1792553380119.jpg',
+    comments: [
+      { id: 'c3-2', author: '박태양 순장', content: '제자도로 세워지는 교회를 위해 함께 기도합니다.', date: '2026.04.12' }
+    ]
+  },
+  {
+    id: 'p2-3',
+    category: 'sermon',
+    title: '광야에서 만나는 하나님의 신실하신 은혜 (출애굽기 16:1-8)',
+    content: `인생의 광야를 만날 때마다 우리는 주님이 준비하신 만나와 메추라기의 기적을 기억해야 합니다.
+결핍과 한계의 순간이야말로 하나님이 우리의 유일한 공급자 되심을 친히 경험하는 가장 거룩한 훈련장입니다.
+
+말씀 포인트:
+1. 광야의 결핍은 하나님의 채우심을 경험하는 은혜의 기회입니다.
+2. 매일 주시는 일용할 양식에 감사하며 오늘 하루를 온전히 신뢰합시다.
+3. 하나님은 결코 우리를 홀로 버려두지 않으시고 항상 함께 걷고 계십니다.`,
+    author: '정영훈 담임목사',
+    date: '2026.04.05',
+    views: 410,
+    likes: 64,
+    isPinned: false,
+    scripture: '출애굽기 16:1-8',
+    scripturePassage: '"보라 내가 너희를 위하여 하늘에서 양식을 비 같이 내리리니 백성이 나가서 일용할 것을 날마다 거둘 것이라"',
+    preacher: '정영훈 담임목사',
+    videoDuration: '36:45',
+    videoUrl: 'https://www.youtube.com/channel/UCQNgJ4A8zgLqHRNYLIkGRqg',
+    imageUrl: '/src/assets/images/fellowship_community_tea_1792553381014.jpg',
+    comments: [
+      { id: 'c3-3', author: '김은혜 집사', content: '광야 같은 삶 속에 큰 힘이 되는 말씀이었습니다.', date: '2026.04.05' }
     ]
   },
   {

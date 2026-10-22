@@ -37,22 +37,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
           {/* Hero Content Overlay */}
           <div className="relative z-10 p-6 sm:p-10 md:p-16 max-w-3xl">
-            {/* Church Vision Kicker (Clean unboxed text, no pills) */}
+            {/* Church Vision Kicker */}
             <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-sky-200 mb-3 tracking-wide">
               <span>{theme.churchName}</span>
               <span aria-hidden="true">·</span>
-              <span>2026 교회 표어: '제자도로 세워가는 교회'</span>
+              <span>{theme.churchEngName}</span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.2] mb-4 text-balance">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.2] mb-6 text-balance">
               {theme.slogan}
             </h1>
-
-            {/* Sub-slogan & Scripture Verse */}
-            <p className="text-base sm:text-lg text-slate-200 font-light leading-relaxed mb-6 max-w-2xl">
-              {theme.subSlogan}
-            </p>
 
             <div className="inline-block px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-xs sm:text-sm text-sky-100 mb-8 max-w-xl">
               "{theme.scriptureVerse}"

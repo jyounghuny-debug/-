@@ -42,7 +42,7 @@ export default function App() {
           ...initialTheme,
           ...parsed,
           slogan: '하나님 나라와 열방을 이어가는 이음교회',
-          subSlogan: '2026 교회 표어: 제자도로 세워가는 교회',
+          subSlogan: '',
           scriptureVerse: '누구든지 자기 십자가를 지고 나를 따르지 않는 자도 능히 내 제자가 되지 못하리라 (누가복음 14:27)',
           seniorPastor: '정영훈 목사',
           pastorImage: pastorStudyImg,
@@ -283,6 +283,20 @@ export default function App() {
     setEditingPost(null);
   };
 
+  const handleUpdateSermon = (updatedSermon: PostItem) => {
+    setPosts((prev) => {
+      const exists = prev.some((p) => p.id === updatedSermon.id);
+      if (exists) {
+        return prev.map((p) => (p.id === updatedSermon.id ? updatedSermon : p));
+      } else {
+        return [updatedSermon, ...prev];
+      }
+    });
+    if (selectedPost && selectedPost.id === updatedSermon.id) {
+      setSelectedPost(updatedSermon);
+    }
+  };
+
   const handleAddCalendarEvent = (newEventData: Omit<CalendarEvent, 'id' | 'rsvps'>) => {
     const newEvent: CalendarEvent = {
       id: 'evt_' + Date.now(),
@@ -492,6 +506,7 @@ export default function App() {
             sermons={displaySermons}
             onOpenSermonPost={(post) => setSelectedPost(post)}
             onOpenSEO={() => setIsSEOOpen(true)}
+            onUpdateSermon={handleUpdateSermon}
             youtubeUrl={seoSettings.socialLinks.youtube}
           />
         )}

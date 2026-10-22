@@ -79,8 +79,10 @@ export interface PostItem {
   isPinned?: boolean;
   imageUrl?: string;
   scripture?: string;
+  scripturePassage?: string;
   preacher?: string;
   videoDuration?: string;
+  videoUrl?: string;
   pdfDownloadName?: string;
   eventDate?: string;
   eventTime?: string;

@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChurchTheme, PostItem } from '../types';
-import { Play, Pause, BookOpen, Volume2, Share2, Download, Video, Calendar, User, Youtube, ExternalLink } from 'lucide-react';
+import { Play, Pause, BookOpen, Volume2, Share2, Download, Video, Calendar, User, Youtube, ExternalLink, Edit3, Plus, Check } from 'lucide-react';
+import { SermonEditModal } from './SermonEditModal';
 
 interface SermonSectionProps {
   theme: ChurchTheme;
   sermons: PostItem[];
   onOpenSermonPost: (post: PostItem) => void;
   onOpenSEO: () => void;
+  onUpdateSermon?: (sermon: PostItem) => void;
   youtubeUrl?: string;
 }
 
@@ -15,16 +17,43 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
   sermons,
   onOpenSermonPost,
   onOpenSEO,
+  onUpdateSermon,
   youtubeUrl = 'https://www.youtube.com/channel/UCQNgJ4A8zgLqHRNYLIkGRqg'
 }) => {
   const [selectedSermon, setSelectedSermon] = useState<PostItem>(sermons[0] || null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackProgress, setPlaybackProgress] = useState<number>(35);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingSermonTarget, setEditingSermonTarget] = useState<PostItem | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Sync selected sermon if sermons list updates
+  useEffect(() => {
+    if (selectedSermon) {
+      const found = sermons.find((s) => s.id === selectedSermon.id);
+      if (found) {
+        setSelectedSermon(found);
+      }
+    } else if (sermons.length > 0) {
+      setSelectedSermon(sermons[0]);
+    }
+  }, [sermons]);
 
   if (!selectedSermon) return null;
 
+  const currentVideoUrl = selectedSermon.videoUrl || youtubeUrl;
+
+  const handleSaveSermon = (savedSermon: PostItem) => {
+    if (onUpdateSermon) {
+      onUpdateSermon(savedSermon);
+    }
+    setSelectedSermon(savedSermon);
+    setToastMessage('설교 말씀 및 영상 설명이 성공적으로 저장되었습니다.');
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   return (
-    <section id="sermon" className="py-20 md:py-28 bg-white border-b border-slate-200/80">
+    <section id="sermon" className="py-20 md:py-28 bg-white border-b border-slate-200/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -41,9 +70,37 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Direct Explanation & Sermon Edit Tool Button */}
+            <button
+              onClick={() => {
+                setEditingSermonTarget(selectedSermon);
+                setIsEditModalOpen(true);
+              }}
+              type="button"
+              className="px-4 py-2.5 text-xs sm:text-sm font-bold text-white rounded-xl flex items-center gap-2 transition-all shadow-xs active:scale-95 hover:opacity-95"
+              style={{ backgroundColor: theme.primaryColor }}
+              title="현재 설교 영상의 제목, 본문, 영상 해설을 직접 수정합니다"
+            >
+              <Edit3 className="w-4 h-4" />
+              <span>설교 & 영상 설명 수정</span>
+            </button>
+
+            {/* New Sermon Add Button */}
+            <button
+              onClick={() => {
+                setEditingSermonTarget(null);
+                setIsEditModalOpen(true);
+              }}
+              type="button"
+              className="px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-xl transition-colors flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4 text-sky-600" />
+              <span>새 설교 등록</span>
+            </button>
+
             <a
-              href={youtubeUrl}
+              href={currentVideoUrl}
               target="_blank"
               rel="noreferrer"
               className="px-4 py-2.5 text-xs sm:text-sm font-bold text-white bg-[#FF0000] hover:bg-[#E60000] rounded-xl flex items-center gap-2 transition-all shadow-xs active:scale-95"
@@ -135,7 +192,7 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
                     </div>
 
                     <a
-                      href={youtubeUrl}
+                      href={currentVideoUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="px-3 py-1.5 bg-[#FF0000] hover:bg-[#E60000] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs active:scale-95 shrink-0"
@@ -162,26 +219,49 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
             {/* Right Side: Scripture Text & Outline (lg:col-span-5) */}
             <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-sky-700 mb-3">
-                  <BookOpen className="w-4 h-4" />
-                  <span>오늘의 성경 본문 말씀</span>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-sky-700">
+                    <BookOpen className="w-4 h-4" />
+                    <span>오늘의 성경 본문 말씀</span>
+                  </div>
+
+                  {/* Direct Edit Button */}
+                  <button
+                    onClick={() => {
+                      setEditingSermonTarget(selectedSermon);
+                      setIsEditModalOpen(true);
+                    }}
+                    type="button"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-50 hover:bg-sky-100 text-sky-800 text-xs font-semibold rounded-lg border border-sky-200 shadow-xs transition-colors"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-sky-600" />
+                    <span>영상 및 설교 설명 수정</span>
+                  </button>
                 </div>
 
                 <div className="bg-sky-50/60 rounded-2xl p-5 border border-sky-100 text-sm text-slate-700 leading-relaxed mb-6 font-serif-kr">
                   <p className="font-bold text-slate-900 mb-2">
                     {selectedSermon.scripture || '요한복음 14장 27절'}
                   </p>
-                  "평안을 너희에게 끼치노니 곧 나의 평안을 너희에게 주노라. 내가 너희에게 주는 것은 세상이 주는 것과 같지 아니하니라. 너희는 마음에 근심하지도 말고 두려워하지도 말라."
+                  {selectedSermon.scripturePassage ||
+                    '"평안을 너희에게 끼치노니 곧 나의 평안을 너희에게 주노라. 내가 너희에게 주는 것은 세상이 주는 것과 같지 아니하니라. 너희는 마음에 근심하지도 말고 두려워하지도 말라."'}
                 </div>
 
-                <h4 className="text-sm font-bold text-slate-900 mb-2">설교 요약 및 묵상</h4>
-                <div className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line line-clamp-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-bold text-slate-900">
+                    설교 요약 및 영상 해설
+                  </h4>
+                  <span className="text-[11px] text-slate-400">
+                    직접 설명 입력됨
+                  </span>
+                </div>
+                <div className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line line-clamp-6 bg-slate-50/70 p-4 rounded-xl border border-slate-100">
                   {selectedSermon.content}
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-slate-100">
                   <a
-                    href={youtubeUrl}
+                    href={currentVideoUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs"
@@ -222,9 +302,23 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
 
         {/* Previous Sermons Selector Row */}
         <div>
-          <h4 className="text-sm font-bold text-slate-900 mb-4">
-            최근 설교 시리즈 (클릭하여 선택)
-          </h4>
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-sm font-bold text-slate-900">
+              최근 설교 시리즈 (클릭하여 선택 및 설명 수정)
+            </h4>
+            <button
+              onClick={() => {
+                setEditingSermonTarget(null);
+                setIsEditModalOpen(true);
+              }}
+              type="button"
+              className="text-xs font-semibold text-sky-700 hover:text-sky-900 flex items-center gap-1"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>새 설교 등록</span>
+            </button>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {sermons.map((sermon) => {
               const isCurrent = selectedSermon.id === sermon.id;
@@ -235,7 +329,7 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
                     setSelectedSermon(sermon);
                     setIsPlaying(false);
                   }}
-                  className={`cursor-pointer rounded-2xl p-5 border transition-all text-left ${
+                  className={`cursor-pointer rounded-2xl p-5 border transition-all text-left relative group ${
                     isCurrent
                       ? 'border-sky-500 bg-sky-50/50 shadow-xs ring-1 ring-sky-500'
                       : 'border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-xs'
@@ -243,9 +337,23 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
                 >
                   <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
                     <span className="font-mono">{sermon.date}</span>
-                    <span className="text-sky-700 font-medium">{sermon.scripture || '주일말씀'}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sky-700 font-medium">{sermon.scripture || '주일말씀'}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingSermonTarget(sermon);
+                          setIsEditModalOpen(true);
+                        }}
+                        type="button"
+                        className="p-1 text-slate-400 hover:text-sky-700 hover:bg-sky-100 rounded transition-colors"
+                        title="이 설교의 영상 설명 직접 수정하기"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <h5 className="font-bold text-slate-900 text-sm line-clamp-1 mb-1">
+                  <h5 className="font-bold text-slate-900 text-sm line-clamp-1 mb-1 group-hover:text-sky-700 transition-colors">
                     {sermon.title}
                   </h5>
                   <p className="text-xs text-slate-500 line-clamp-2">
@@ -258,6 +366,27 @@ export const SermonSection: React.FC<SermonSectionProps> = ({
         </div>
 
       </div>
+
+      {/* Sermon Edit & Video Explanation Modal */}
+      <SermonEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingSermonTarget(null);
+        }}
+        sermon={editingSermonTarget}
+        onSaveSermon={handleSaveSermon}
+        theme={theme}
+        defaultYoutubeUrl={youtubeUrl}
+      />
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-xl border border-slate-700 flex items-center gap-2 animate-in fade-in duration-200">
+          <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </section>
   );
 };

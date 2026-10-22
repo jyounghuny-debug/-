@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChurchTheme, WorshipSchedule } from '../types';
 import { X, Palette, Type, FileEdit, Image as ImageIcon, Eye, RotateCcw, Download, Upload, Check, Sparkles, Clock, Trash2, Plus } from 'lucide-react';
-import { pastorStudyImg, pastorOriginalImg } from '../data/initialData';
+import { pastorStudyImg } from '../data/initialData';
 
 interface CustomizerModalProps {
   isOpen: boolean;
@@ -26,6 +26,26 @@ export const CustomizerModal: React.FC<CustomizerModalProps> = ({
   const [localTheme, setLocalTheme] = useState<ChurchTheme>(theme);
   const [localSchedules, setLocalSchedules] = useState<WorshipSchedule[]>(schedules);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Local image file upload handler via FileReader
+  const handleLocalImageUpload = (field: 'heroImage' | 'pastorImage' | 'fellowshipImage' | 'worshipImage') => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드할 수 있습니다.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        setLocalTheme((prev) => ({ ...prev, [field]: dataUrl }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   if (!isOpen) return null;
 
@@ -380,72 +400,114 @@ export const CustomizerModal: React.FC<CustomizerModalProps> = ({
 
           {/* TAB 3: Images */}
           {activeTab === 'images' && (
-            <div className="space-y-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">메인 히어로 성전 사진 URL</label>
+            <div className="space-y-6">
+              {/* Main Hero Church Image */}
+              <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                  <label className="block text-xs font-bold text-slate-800">
+                    메인 히어로 성전 사진
+                  </label>
+                  <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 text-sky-700 text-xs font-semibold rounded-lg border border-sky-200 cursor-pointer shadow-xs transition-colors">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>내 컴퓨터에서 사진 올리기</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLocalImageUpload('heroImage')}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
                 <input
                   type="text"
                   value={localTheme.heroImage}
                   onChange={(e) => setLocalTheme({ ...localTheme, heroImage: e.target.value })}
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 mb-2"
+                  placeholder="이미지 웹 주소(URL) 또는 직접 입력"
+                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 mb-2.5 bg-white font-mono"
                 />
-                <div className="h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+                <div className="h-36 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                   <img src={localTheme.heroImage} alt="Hero Preview" className="w-full h-full object-cover" />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-slate-100">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">담임목사 사진</label>
-                  <div className="flex gap-1.5 mb-2">
-                    <button
-                      type="button"
-                      onClick={() => setLocalTheme({ ...localTheme, pastorImage: pastorStudyImg })}
-                      className="px-2 py-1 text-[11px] font-semibold bg-sky-50 text-sky-700 rounded-lg border border-sky-200 hover:bg-sky-100"
-                    >
-                      서재 미소 사진
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setLocalTheme({ ...localTheme, pastorImage: pastorOriginalImg })}
-                      className="px-2 py-1 text-[11px] font-semibold bg-slate-100 text-slate-700 rounded-lg border border-slate-200 hover:bg-slate-200"
-                    >
-                      원본 프로필
-                    </button>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                {/* Pastor Portrait */}
+                <div className="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1.5">담임목사 프로필 사진</label>
+                    <label className="w-full mb-2 py-1.5 px-2 bg-white hover:bg-slate-100 text-sky-700 text-[11px] font-semibold rounded-lg border border-sky-200 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-colors">
+                      <Upload className="w-3 h-3 text-sky-600" />
+                      <span>내 컴퓨터에서 사진 올리기</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLocalImageUpload('pastorImage')}
+                        className="hidden"
+                      />
+                    </label>
+                    <input
+                      type="text"
+                      value={localTheme.pastorImage}
+                      onChange={(e) => setLocalTheme({ ...localTheme, pastorImage: e.target.value })}
+                      placeholder="이미지 URL"
+                      className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 mb-2 bg-white font-mono"
+                    />
                   </div>
-                  <input
-                    type="text"
-                    value={localTheme.pastorImage}
-                    onChange={(e) => setLocalTheme({ ...localTheme, pastorImage: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 mb-1.5"
-                  />
-                  <div className="h-28 rounded-lg overflow-hidden border border-slate-200 bg-slate-100">
+                  <div className="h-32 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                     <img src={localTheme.pastorImage} alt="Pastor Preview" className="w-full h-full object-cover object-center" />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">성도 교제 사진</label>
-                  <input
-                    type="text"
-                    value={localTheme.fellowshipImage}
-                    onChange={(e) => setLocalTheme({ ...localTheme, fellowshipImage: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 mb-1.5"
-                  />
-                  <div className="h-28 rounded-lg overflow-hidden border border-slate-200">
+                {/* Fellowship Image */}
+                <div className="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1.5">성도 교제 사진</label>
+                    <label className="w-full mb-2 py-1.5 px-2 bg-white hover:bg-slate-100 text-sky-700 text-[11px] font-semibold rounded-lg border border-sky-200 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-colors">
+                      <Upload className="w-3 h-3 text-sky-600" />
+                      <span>내 컴퓨터에서 사진 올리기</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLocalImageUpload('fellowshipImage')}
+                        className="hidden"
+                      />
+                    </label>
+                    <input
+                      type="text"
+                      value={localTheme.fellowshipImage}
+                      onChange={(e) => setLocalTheme({ ...localTheme, fellowshipImage: e.target.value })}
+                      placeholder="이미지 URL"
+                      className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 mb-2 bg-white font-mono"
+                    />
+                  </div>
+                  <div className="h-32 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                     <img src={localTheme.fellowshipImage} alt="Fellowship Preview" className="w-full h-full object-cover" />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">예배 찬양 사진</label>
-                  <input
-                    type="text"
-                    value={localTheme.worshipImage}
-                    onChange={(e) => setLocalTheme({ ...localTheme, worshipImage: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 mb-1.5"
-                  />
-                  <div className="h-28 rounded-lg overflow-hidden border border-slate-200">
+                {/* Worship Image */}
+                <div className="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1.5">예배 찬양 사진</label>
+                    <label className="w-full mb-2 py-1.5 px-2 bg-white hover:bg-slate-100 text-sky-700 text-[11px] font-semibold rounded-lg border border-sky-200 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-colors">
+                      <Upload className="w-3 h-3 text-sky-600" />
+                      <span>내 컴퓨터에서 사진 올리기</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLocalImageUpload('worshipImage')}
+                        className="hidden"
+                      />
+                    </label>
+                    <input
+                      type="text"
+                      value={localTheme.worshipImage}
+                      onChange={(e) => setLocalTheme({ ...localTheme, worshipImage: e.target.value })}
+                      placeholder="이미지 URL"
+                      className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 mb-2 bg-white font-mono"
+                    />
+                  </div>
+                  <div className="h-32 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                     <img src={localTheme.worshipImage} alt="Worship Preview" className="w-full h-full object-cover" />
                   </div>
                 </div>

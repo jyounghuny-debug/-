@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MissionField, missionFields } from '../data/missionData';
 import { ChurchTheme } from '../types';
-import { X, Heart, Globe, Calendar, MapPin, Send, CheckCircle2, ChevronRight, ShieldCheck, Share2 } from 'lucide-react';
+import { X, Heart, Globe, Calendar, MapPin, Send, CheckCircle2, ChevronRight, ShieldCheck, Share2, Upload, RotateCcw } from 'lucide-react';
 
 interface MissionPrayerModalProps {
   isOpen: boolean;
@@ -24,6 +24,48 @@ export const MissionPrayerModal: React.FC<MissionPrayerModalProps> = ({
   });
   const [prayedFields, setPrayedFields] = useState<{ [id: string]: boolean }>({});
   const [commentText, setCommentText] = useState('');
+  const [fieldImages, setFieldImages] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('ieum_mission_field_images');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const handleMissionImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드할 수 있습니다.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        setFieldImages((prev) => {
+          const updated = { ...prev, [selectedId]: dataUrl };
+          try {
+            localStorage.setItem('ieum_mission_field_images', JSON.stringify(updated));
+          } catch {}
+          return updated;
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleResetMissionImage = () => {
+    setFieldImages((prev) => {
+      const next = { ...prev };
+      delete next[selectedId];
+      try {
+        localStorage.setItem('ieum_mission_field_images', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
   const [comments, setComments] = useState<{ [id: string]: Array<{ author: string; text: string; time: string }> }>({
     cambodia: [
       { author: '정영훈 목사', text: '김동선, 이금주 선교사님 가정을 위해 이음교회가 날마다 무릎으로 동역합니다.', time: '방금 전' },
@@ -204,29 +246,58 @@ export const MissionPrayerModal: React.FC<MissionPrayerModalProps> = ({
             </div>
           </div>
 
-          {/* Mission Field Photograph */}
-          {currentField.image && (
-            <div className="relative rounded-2xl overflow-hidden border border-slate-200/90 shadow-xs max-h-72 bg-slate-100">
-              <img
-                src={currentField.image}
-                alt={`${currentField.country} - ${currentField.missionaries} 사역 현장`}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/80 via-slate-950/40 to-transparent p-3 sm:p-4 text-white">
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold bg-white/25 backdrop-blur-md px-2 py-0.5 rounded text-white border border-white/30">
-                    {currentField.flag} {currentField.country} 사역지 현장
-                  </span>
-                  <span className="text-xs text-white/90">
-                    {currentField.missionaries}
-                  </span>
-                </div>
-                <p className="text-xs sm:text-sm font-semibold text-white/95 mt-1 line-clamp-1">
-                  {currentField.fieldTitle}
-                </p>
+          {/* Mission Field Photograph with upload from local computer */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-slate-700">사역지 현장 사진</span>
+              <div className="flex items-center gap-2">
+                <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-slate-100 text-sky-700 text-xs font-semibold rounded-lg border border-sky-200 shadow-xs transition-colors">
+                  <Upload className="w-3.5 h-3.5 text-sky-600" />
+                  <span>내 컴퓨터에서 사진 올리기</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleMissionImageUpload}
+                    className="hidden"
+                  />
+                </label>
+                {fieldImages[currentField.id] && (
+                  <button
+                    type="button"
+                    onClick={handleResetMissionImage}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-slate-500 hover:text-slate-800 text-xs bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                    title="기본 사진으로 복원"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>기본 복원</span>
+                  </button>
+                )}
               </div>
             </div>
-          )}
+
+            {(fieldImages[currentField.id] || currentField.image) && (
+              <div className="relative rounded-2xl overflow-hidden border border-slate-200/90 shadow-xs max-h-72 bg-slate-100">
+                <img
+                  src={fieldImages[currentField.id] || currentField.image}
+                  alt={`${currentField.country} - ${currentField.missionaries} 사역 현장`}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/80 via-slate-950/40 to-transparent p-3 sm:p-4 text-white">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold bg-white/25 backdrop-blur-md px-2 py-0.5 rounded text-white border border-white/30">
+                      {currentField.flag} {currentField.country} 사역지 현장
+                    </span>
+                    <span className="text-xs text-white/90">
+                      {currentField.missionaries}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-semibold text-white/95 mt-1 line-clamp-1">
+                    {currentField.fieldTitle}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Latest News & Field Details */}
           <div className="space-y-3">
